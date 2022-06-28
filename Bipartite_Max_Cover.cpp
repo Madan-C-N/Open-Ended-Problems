@@ -1,59 +1,46 @@
-#include<iostream>
+#include <iostream>
+#include <string.h>
 using namespace std;
-
-#define M 6
-#define N 6
-
-bool Check(int a[][N],int m[],bool c[], int u) //Finds a vertice for set A to match with
-{
-  for(int i=0;i<N;i++)
-  {
-    if(a[u][i] && !c[i])
-    {
-      c[i]=true;
-      if(m[i]<0 || Check(a,m,c,m[i])) //Recursively calls the function to backtrack and find for other combinations
-      {
-        m[i]=u;
-        return true;
-      }
-    }
-  }
-  return false;
+bool isMatching(bool **graph, int t, bool visited[], int assigned[],int n) {
+        for (int p = 0; p < n; p++) {
+		if (graph[t][p] && visited[p] != true) {
+			visited[p] = true;
+		if (assigned[p] == -99 || isMatching(graph, assigned[p], visited, assigned,n)) {
+				assigned[p] = t;
+                                         return true;
+			}
+		}
+	}
+	return false;
 }
-
-int BMC(int a[][N])
-{
-    int match[N],result=0;
-    bool check[N]; //Array to keep track whether the vertices in set B have been checked for respective set A vertice
-
-    for(int i=0;i<N;i++)
-    {
-      match[i]=-1;
-      check[i]=false;
-    }
-
-    for(int i=0;i<M;i++) //Tries to find a match for every vertice in set A
-    {
-      if(Check(a,match,check,i))
-        result++;
-    }
-
-    return result;
+int maximumMatching(bool**graph,int n) {
+	int a[n], t= 0;
+	bool visited[n];
+	for (int p= 0; p< n; p++)
+		a[p] = -99;
+	for (int q= 0; q< n; q++) {
+		for (int p = 0; p < n; p++)
+			visited[p] = false;
+		if (isMatching(graph, q, visited, a,n) == true)
+			t++;
+	}
+	return t;
 }
 
 int main()
 {
-    int a[M][N]; //M represents the number of vertices in set A and N in set B
-    cout<<"Enter the adjacency matrix\n";
-
-    for(int i=0;i<M;i++)
-    {
-        for(int j=0;j<N;j++)
-        {
-            cin>>a[i][j];
-        }
-    }
-
-    cout<<BMC(a);
-    return 0;
+    cout<<"Enter the number of vertices\n";
+    int t;
+    cin>>t;
+    const int n=t;
+    bool **graph;
+    graph=new bool*[n];
+    cout<<"Enter the bipartite graph:\n";
+    for(int i=0;i<n;i++){
+        graph[i]=new bool[n];
+         for(int j=0;j<n;j++)
+                 cin>>graph[i][j];
+	}
+         cout << "The maximum cover possible is:"<< maximumMatching(graph,n)/2<<endl;
+	return 0;
 }
